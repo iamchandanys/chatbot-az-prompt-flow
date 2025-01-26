@@ -175,3 +175,6 @@ __pycache__/
 .promptflow/*
 !.promptflow/flow.tools.json
 .runs/
+
+# VS Code
+.vscode/
