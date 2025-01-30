@@ -1,21 +1,58 @@
-$schema: https://azuremlschemas.azureedge.net/promptflow/latest/Flow.schema.json
+id: template_chat_flow
+name: Template Chat Flow
 environment:
   python_requirements_txt: requirements.txt
 inputs:
   chat_history:
     type: list
+    is_chat_input: false
     is_chat_history: true
-    default: []
-  question:
+  user_input:
     type: string
     is_chat_input: true
-    default: who is virat kohli?
 outputs:
   answer:
     type: string
-    reference: ${chat.output}
+    reference: ${submit_claim_func.output}
     is_chat_output: true
 nodes:
+  - name: user_input_llm
+    type: llm
+    source:
+      type: code
+      path: user_input_llm.jinja2
+    inputs:
+      deployment_name: x-chatbot-gpt-4o-model
+      temperature: 1
+      top_p: 1
+      max_tokens: 1000
+      functions:
+        - name: validate_policy_number
+          description:
+            Validates the provided policy number to determine if it exists in
+            the database. This function should only be invoked when the user
+            explicitly provides a policy number.
+          parameters:
+            type: object
+            properties:
+              policy_number:
+                type: string
+                description: The policy number to validate, e.g., 'POLICY55525'.
+            required:
+              - policy_number
+      function_call: auto
+      user_input: ${inputs.user_input}
+    connection: aoai_connection
+    api: chat
+    use_variants: false
+  - name: execute_funcs
+    type: python
+    source:
+      type: code
+      path: execute_funcs.py
+    inputs:
+      response_message: ${user_input_llm.output}
+    use_variants: false
   - name: chat
     type: llm
     source:
@@ -23,9 +60,55 @@ nodes:
       path: chat.jinja2
     inputs:
       deployment_name: x-chatbot-gpt-4o-model
-      max_tokens: 1000
       temperature: 0.7
+      top_p: 0.95
+      max_tokens: 800
+      presence_penalty: 0
+      frequency_penalty: 0
+      functions:
+        - name: submit_claim
+          description:
+            Trigger the claim submission process immediately after the user
+            provides the date of the incident. Use this function when you have
+            collected all the required details — policy number, reason for the
+            claim, and date of the incident — and are ready to finalize the claim.
+            For example, prompt the user to provide the incident date if it hasn't
+            been provided yet. Once the correct date is submitted, call this
+            function to submit the claim.
+          parameters:
+            type: object
+            properties:
+              policy_number:
+                type: string
+                description:
+                  The unique identifier of the user's insurance policy, e.g.,
+                  'POLICY248'.
+              reason_for_claim:
+                type: string
+                description:
+                  A brief explanation provided by the user describing the reason for
+                  filing the claim, such as 'accident damage' or 'vehicle theft'.
+              date_of_incident:
+                type: string
+                description:
+                  The date the incident occurred, provided by the user in
+                  'DD-MM-YYYY' format.
+            required:
+              - policy_number
+              - reason_for_claim
+              - date_of_incident
+      function_call: auto
       chat_history: ${inputs.chat_history}
-      question: ${inputs.question}
-    connection: x-chatbot-ai-service_aoai
+      execute_funcs_output: ${execute_funcs.output}
+      user_input: ${inputs.user_input}
+    connection: aoai_connection
     api: chat
+    use_variants: false
+  - name: submit_claim_func
+    type: python
+    source:
+      type: code
+      path: submit_claim_func.py
+    inputs:
+      response_message: ${chat.output}
+    use_variants: false
