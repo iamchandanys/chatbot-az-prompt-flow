@@ -1,0 +1,114 @@
+id: template_chat_flow
+name: Template Chat Flow
+environment:
+  python_requirements_txt: requirements.txt
+inputs:
+  chat_history:
+    type: list
+    is_chat_input: false
+    is_chat_history: true
+  question:
+    type: list
+    is_chat_input: true
+outputs:
+  answer:
+    type: string
+    reference: ${submit_inspection.output}
+    is_chat_output: true
+nodes:
+  - name: detect_image_py
+    type: python
+    source:
+      type: code
+      path: detect_image.py
+    inputs:
+      questions: ${inputs.question}
+    use_variants: false
+  - name: detect_image_llm
+    type: custom_llm
+    source:
+      type: package_with_prompt
+      path: bla.jinja2
+      tool: promptflow.tools.aoai_gpt4v.AzureOpenAI.chat
+    inputs:
+      connection: aoai_connection
+      deployment_name: gpt-4
+      temperature: 0.5
+      top_p: 1
+      presence_penalty: 0
+      frequency_penalty: 0
+      chat_history: ${inputs.chat_history}
+      question: ${detect_image_py.output}
+    use_variants: false
+  - name: chat_llm
+    type: llm
+    source:
+      type: code
+      path: chat_llm.jinja2
+    inputs:
+      deployment_name: x-chatbot-gpt-4o-model
+      temperature: 0.7
+      top_p: 1
+      functions:
+        - name: submit_inspection
+          description:
+            This function is used to submit a completed car inspection process
+            for users who have purchased or renewed a car insurance policy. It
+            accepts images of the car's front, back, left, and right sides, along
+            with the extracted car number, to finalize and log the inspection
+            process. The images are analyzed for clarity and potential damages,
+            which are reported in the inspection summary. The function ensures the
+            inspection process is systematic, accurate, and ready for review by the
+            insurance company.
+          parameters:
+            type: object
+            properties:
+              front_image:
+                type: string
+                description:
+                  The uploaded image of the car's front side, provided as a URL or
+                  base64 string. This image is analyzed for visibility of the car
+                  number and any potential damages.
+              back_image:
+                type: string
+                description:
+                  The uploaded image of the car's back side, provided as a URL or
+                  base64 string. This image is analyzed for potential damages.
+              left_image:
+                type: string
+                description:
+                  The uploaded image of the car's left side, provided as a URL or
+                  base64 string. This image is analyzed for any visible dents or
+                  scratches.
+              right_image:
+                type: string
+                description:
+                  The uploaded image of the car's right side, provided as a URL or
+                  base64 string. This image is analyzed for any visible dents,
+                  scratches, or other damages.
+              car_number:
+                type: string
+                description:
+                  The car number extracted from the front side image of the car, used
+                  for verification and record-keeping purposes.
+            required:
+              - front_image
+              - back_image
+              - left_image
+              - right_image
+              - car_number
+      function_call: auto
+      chat_history: ${inputs.chat_history}
+      detect_image_llm_output: ${detect_image_llm.output}
+      question: ${inputs.question}
+    connection: aoai_connection
+    api: chat
+    use_variants: false
+  - name: submit_inspection
+    type: python
+    source:
+      type: code
+      path: submit_inspection.py
+    inputs:
+      response_message: ${chat_llm.output}
+    use_variants: false

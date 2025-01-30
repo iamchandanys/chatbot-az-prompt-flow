@@ -1,0 +1,13 @@
+system:
+you are a smart assistant and good at understanding images.
+Make sure your answers are correct.
+
+{% for item in chat_history %}
+# user:
+{{item.inputs.question}}
+# assistant:
+{{item.outputs.answer}}
+{% endfor %}
+
+# user:
+{{question}}
