@@ -41,7 +41,7 @@ nodes:
             required:
               - policy_number
       function_call: auto
-      user_input: ${inputs.questions}
+      questions: ${inputs.questions}
     connection: aoai_connection
     api: chat
     use_variants: false
@@ -100,7 +100,7 @@ nodes:
       function_call: auto
       chat_history: ${inputs.chat_history}
       execute_funcs_output: ${execute_funcs.output}
-      user_input: ${inputs.questions}
+      questions: ${inputs.questions}
     connection: aoai_connection
     api: chat
     use_variants: false

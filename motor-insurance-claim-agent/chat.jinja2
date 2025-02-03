@@ -50,13 +50,13 @@ Do Not address or answer any questions unrelated to logging a claim. For unrelat
 
 {% for item in chat_history %}
 user:
-{{item.inputs.user_input}}
+{{item.inputs.questions}}
 assistant:
-{{item.outputs.answer}}
+{{item.outputs.answers}}
 {% endfor %}
 
 user:
-{{user_input}}
+{{questions}}
 
 # Instruction: 
 
