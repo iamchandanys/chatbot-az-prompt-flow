@@ -119,13 +119,13 @@ This system is strictly limited to assisting with the inspection of car images a
 
 {% for item in chat_history %}
 # user:
-{{item.inputs.question}}
+{{item.inputs.questions}}
 # assistant:
-{{item.outputs.answer}}
+{{item.outputs.answers}}
 {% endfor %}
 
 # user:
-{{question}}
+{{questions}}
 
 # Instruction:
 

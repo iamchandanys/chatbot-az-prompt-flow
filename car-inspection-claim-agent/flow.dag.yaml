@@ -7,11 +7,11 @@ inputs:
     type: list
     is_chat_input: false
     is_chat_history: true
-  question:
+  questions:
     type: list
     is_chat_input: true
 outputs:
-  answer:
+  answers:
     type: string
     reference: ${submit_inspection.output}
     is_chat_output: true
@@ -22,7 +22,7 @@ nodes:
       type: code
       path: detect_image.py
     inputs:
-      questions: ${inputs.question}
+      questions: ${inputs.questions}
     use_variants: false
   - name: detect_image_llm
     type: custom_llm
@@ -38,7 +38,7 @@ nodes:
       presence_penalty: 0
       frequency_penalty: 0
       chat_history: ${inputs.chat_history}
-      question: ${detect_image_py.output}
+      questions: ${inputs.questions}
     use_variants: false
   - name: chat_llm
     type: llm
@@ -100,7 +100,7 @@ nodes:
       function_call: auto
       chat_history: ${inputs.chat_history}
       detect_image_llm_output: ${detect_image_llm.output}
-      question: ${inputs.question}
+      questions: ${inputs.questions}
     connection: aoai_connection
     api: chat
     use_variants: false
