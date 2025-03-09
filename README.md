@@ -67,3 +67,15 @@ docker push <ACR-Name>.azurecr.io/<Image-Name>:latest
 ```
 
 For more information, visit the [Prompt Flow Documentation](https://microsoft.github.io/promptflow/).
+
+## Screenshots
+
+Here are some screenshots of the chatbot in action:
+
+### Car Inspection Claim Agent
+
+![Car Inspection Claim Agent](images/car_inspection.png)
+
+### Motor Insurance Claim Agent
+
+![Motor Insurance Claim Agent - Step 1](images/motor_insurance.png)
