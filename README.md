@@ -47,6 +47,14 @@ pf flow build --source . --output dist --format docker
 docker build dist -t <Image-Name>
 ```
 
+### Set Environment Variables and Test
+
+Before running the Docker image, ensure you set `AOAI_CONNECTION_API_KEY` environment variable.
+
+```sh
+docker run -e AOAI_CONNECTION_API_KEY=<Your-API-Key> <Image-Name>
+```
+
 ### Login to ACR
 
 ```sh
