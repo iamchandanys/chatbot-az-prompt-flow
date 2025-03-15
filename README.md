@@ -1,5 +1,17 @@
 Prompt flow is a suite of development tools designed to streamline the end-to-end development cycle of LLM-based AI applications, from ideation, prototyping, testing, evaluation to production deployment and monitoring. It makes prompt engineering much easier and enables you to build LLM apps with production quality.
 
+## Screenshots
+
+Here are some screenshots of the chatbot in action:
+
+### Car Inspection Claim Agent
+
+![Car Inspection Claim Agent](images/car_inspection.png)
+
+### Motor Insurance Claim Agent
+
+![Motor Insurance Claim Agent - Step 1](images/motor_insurance.png)
+
 ## Prompt Flow VS Code Extension
 
 To enhance your development experience, you can add the Prompt Flow extension to Visual Studio Code. This extension provides a range of features to streamline your workflow, including syntax highlighting, code snippets, and integration with the Prompt Flow CLI.
@@ -75,15 +87,3 @@ docker push <ACR-Name>.azurecr.io/<Image-Name>:latest
 ```
 
 For more information, visit the [Prompt Flow Documentation](https://microsoft.github.io/promptflow/).
-
-## Screenshots
-
-Here are some screenshots of the chatbot in action:
-
-### Car Inspection Claim Agent
-
-![Car Inspection Claim Agent](images/car_inspection.png)
-
-### Motor Insurance Claim Agent
-
-![Motor Insurance Claim Agent - Step 1](images/motor_insurance.png)
